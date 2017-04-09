@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="io.entitas.lang.eclipse.feature"
+      label="Entitas-Lang"
+      version="1.0.0.qualifier">
+
+   <description url="http://www.example.com/description">
+      [Enter Feature Description here.]
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <requires>
+      <import plugin="org.eclipse.xtext"/>
+      <import plugin="org.eclipse.xtext.xbase"/>
+      <import plugin="org.eclipse.equinox.common" version="3.5.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.emf.ecore"/>
+      <import plugin="org.eclipse.xtext.xbase.lib"/>
+      <import plugin="org.antlr.runtime"/>
+      <import plugin="org.eclipse.xtext.util"/>
+      <import plugin="org.eclipse.xtend.lib"/>
+      <import plugin="org.eclipse.emf.common"/>
+      <import plugin="org.apache.log4j"/>
+      <import plugin="io.entitas.lang.eclipse"/>
+      <import plugin="org.eclipse.xtext.ide"/>
+      <import plugin="org.eclipse.xtext.xbase.ide"/>
+      <import plugin="io.entitas.lang.eclipse.ide"/>
+      <import plugin="org.eclipse.xtext.ui"/>
+      <import plugin="org.eclipse.xtext.ui.shared"/>
+      <import plugin="org.eclipse.xtext.ui.codetemplates.ui"/>
+      <import plugin="org.eclipse.ui.editors" version="3.5.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.ide" version="3.5.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.compare"/>
+      <import plugin="org.eclipse.xtext.builder"/>
+   </requires>
+
+   <plugin
+         id="io.entitas.lang.eclipse"
+         download-size="0"
+         install-size="0"
+         version="1.0.0.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="io.entitas.lang.eclipse.ide"
+         download-size="0"
+         install-size="0"
+         version="1.0.0.qualifier"
+         unpack="false"/>
+
+   <plugin
+         id="io.entitas.lang.eclipse.ui"
+         download-size="0"
+         install-size="0"
+         version="1.0.0.qualifier"
+         unpack="false"/>
+
+</feature>

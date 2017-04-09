@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>fileTypes</key>
+	<array>
+		<string>*.entitas</string>
+	</array>
+	<key>name</key>
+	<string>entitas</string>
+	<key>patterns</key>
+	<array>
+		<dict>
+			<key>name</key>
+			<string>keyword.control.entitas</string>
+			<key>match</key>
+			<string>\b(target|namespace|context|alias|comp|in|sys|trigger|noFilter|filter|access|allOf|anyOf|noneOf|removed|added|removedOrAdded)\b</string>
+		</dict>
+	</array>
+	<key>scopeName</key>
+	<string>text.entitas</string>
+</dict>
+</plist>

@@ -1,0 +1,63 @@
+{
+    "name": "entitas-lang",
+    "displayName": "Entitas Lang",
+    "description": "Domain specific languge for Entitas framework",
+    "version": "0.37.0",
+    "publisher": "mzaks",
+    "icon": "images/icon.png",
+    "license": "MIT",
+    "repository" : { 
+        "type" : "git",
+        "url" : "https://github.com/mzaks/ECS-Lang.git"
+    },
+    "bugs": {
+        "url": "https://github.com/mzaks/ECS-Lang/issues"
+    },
+    "engines": {
+        "vscode": "^1.7.0"
+    },
+    "categories": [
+        "Languages"
+    ],
+    "activationEvents": [
+        "onLanguage:entitas"
+    ],
+    "main": "out/extension",
+    "contributes": {
+        "languages": [
+            {
+                "id": "entitas",
+                "aliases": [
+                    "entitas"
+                ],
+                "extensions": [
+                    ".entitas"
+                ],
+                "configuration": "./entitas.configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "entitas",
+                "scopeName": "text.entitas",
+                "path": "./syntaxes/entitas.tmLanguage"
+            }
+        ]
+    },
+    "devDependencies": {
+        "typescript": "^2.0.3",
+        "vscode": "^1.0.0",
+        "@types/node": "^6.0.42"
+    },
+    "dependencies": {
+        "vscode-jsonrpc": "^3.0.1-alpha.3",
+        "vscode-languageserver-types": "^3.0.1-alpha.5",
+        "vscode-languageclient": "^3.0.1-alpha.7"
+    },
+    "scripts": {
+        "prepublish": "node ./node_modules/vscode/bin/install && tsc -p ./src",
+        "compile": "tsc -p ./src",
+        "watch": "tsc -w -p ./src",
+        "update-vscode": "node ./node_modules/vscode/bin/install"
+    }
+}

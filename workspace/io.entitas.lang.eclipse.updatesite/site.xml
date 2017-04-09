@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/io.entitas.lang.eclipse.feature_1.0.0.201702182256.jar" id="io.entitas.lang.eclipse.feature" version="1.0.0.201702182256"/>
+</site>

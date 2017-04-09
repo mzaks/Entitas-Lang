@@ -1,0 +1,25 @@
+apply plugin: 'application'
+
+dependencies {
+	compile project(':io.entitas.lang')
+	compile "org.eclipse.xtext:org.eclipse.xtext.ide:${xtextVersion}"
+	compile "org.eclipse.xtext:org.eclipse.xtext.xbase.ide:${xtextVersion}"
+}
+
+// Add a start script for the socket case
+mainClassName = 'io.entitas.lang.ide.RunServer'
+startScripts {
+	applicationName = 'entitas-lang-socket'
+}
+
+task standaloneStartScript(type: CreateStartScripts) {
+	mainClassName = 'io.entitas.lang.ide.ServerLauncher'
+	applicationName = 'entitas-lang-standalone'
+	outputDir = new File(project.buildDir, 'scripts')
+	classpath = jar.outputs.files + project.configurations.runtime
+}
+
+applicationDistribution.into("bin") {
+	from(standaloneStartScript)
+	fileMode = 0755
+}

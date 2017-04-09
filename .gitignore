@@ -1,0 +1,42 @@
+runtime-EclipseXtext/.metadata
+workspace/.metadata
+workspace/io.entitas.lang.eclipse.ide/bin
+runtime-EclipseXtext
+workspace/io.entitas.lang.eclipse.ui/bin
+workspace/io.entitas.lang.eclipse/bin
+*._trace
+*.xtendbin
+EclipsePluginBuild
+workspace/io.entitas.lang.parent/build
+workspace/io.entitas.lang.parent/io.entitas.lang.ide/bin
+workspace/io.entitas.lang.parent/io.entitas.lang.ide/build
+workspace/io.entitas.lang.parent/io.entitas.lang/bin
+workspace/io.entitas.lang.parent/io.entitas.lang/build
+
+# Node
+node_modules
+
+# Xtext / Xtend
+model
+src-gen
+xtend-gen
+.antlr*.jar
+
+# Eclipse
+.classpath
+.project
+.settings/
+.metadata/
+bin/
+
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea/
+out/
+
+# Gradle
+.gradle/
+build/
+!gradle-wrapper.jar

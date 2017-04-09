@@ -1,0 +1,132 @@
+grammar io.entitas.lang.DSL with org.eclipse.xtext.common.Terminals
+
+generate dsl "http://www.entitas.io/lang/DSL"
+
+Root:
+	target = Target?
+	namespace = Namespace?
+	context = Context?
+	typeAliases += Alias*
+	
+	components += Component*
+	
+	systems += System*
+;
+
+Target:
+	'target' (ids += TargetId ','?)+
+;
+
+TargetId:
+	name = ID ('(' parameters += TargetParameter ','? ')')? (version = Version)?
+;
+
+TargetParameter:
+	'gen_path' ':' path = STRING
+;
+
+Version:{Version}
+	major = INT ('.' minor = INT ('.' patch = INT)?)?
+;
+
+Namespace:
+	'namespace' name = QualifiedName
+;
+
+Context:
+	'context' (ids += ContextId ','?)+ 
+;
+
+ContextId:
+	name = ID ('(' parameters += ContextParameter ','? ')')?
+;
+
+ContextParameter:
+	'default'
+;
+
+Alias:
+	'alias' name = ID (listOfAliases = AliasList | singleAlias = SingleAlias)
+;
+
+AliasList:
+	rules += AliasRule+
+;
+
+AliasRule:
+	target = [TargetId] ':' typeAlias = STRING 
+;
+
+SingleAlias:
+	':' typeAlias = STRING
+;
+
+
+Component:
+	'comp' name = ValidID ('(' (parameters += ComponentParameter ','?)+ ')')? (scope=ContextScopes)? (listOfProperties = PropertyList | propertyPrefix = PropertyPrefix)?
+;
+
+PropertyList:
+	rules += PropertyRules+
+;
+
+PropertyRules:
+	name = ID ':' alias = [Alias] (',')?
+;
+
+PropertyPrefix:
+	'prefix' '(' string = STRING ')'
+;
+
+ComponentParameter:
+	'unique'
+;
+
+ContextScopes:
+	'in' (references += [ContextId] ','?)+
+;
+
+System:
+	'sys' name = ID ('(' (parameters += SystemParameter ','?)+ ')')?
+		(
+			reactive ?= 'trigger' (scope = ContextScope)? ':'
+				(triggerRules += TriggerRule ','?)+
+				( noFilter ?= 'noFilter' |
+					'filter' matcherRules = MatcherRule
+				)?
+		)?
+		(
+			'access' ':' 
+				accessRules += AccessRule+
+		)?
+; 
+
+AccessRule:
+	name = ID ':'
+	( ( ((matcherRule = MatcherRule) /* | ( ':' componentRef = [Component])*/ ) (scope = ContextScope)? )
+		|  contextRef = [ContextId]
+	)
+;
+
+SystemParameter:
+	'init' | 'cleanup' | 'teardown' | 'no_exec' | 'explicit_context_list'
+;
+
+TriggerRule:
+	( removed?='removed' | added?='added' | removedOrAdded?='removedOrAdded') '(' (components += [Component] ','? )+ ')'
+;
+
+MatcherRule:{MatcherRule}
+	('allOf' '(' (allComponents += [Component] ','? )+ ')')? ('anyOf' '(' (anyComponents += [Component] ','? )+ ')')? ('noneOf' '(' (noneComponents += [Component] ','? )+ ')')?  
+;
+
+ContextScope:
+	'in' reference = [ContextId]
+;
+
+QualifiedName:
+  ValidID ('.' ValidID)*;
+
+ValidID:
+	ID | 'target' | 'namespace' | 'default' | 'unique' | 'prefix' | 'in' | 'alias'
+;

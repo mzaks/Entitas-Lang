@@ -1,0 +1,3 @@
+include 'io.entitas.lang'
+include 'io.entitas.lang.ide'
+include 'vscode-extension-self-contained'
