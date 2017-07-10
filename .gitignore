@@ -23,8 +23,8 @@ xtend-gen
 .antlr*.jar
 
 # Eclipse
-.classpath
-.project
+# .classpath
+# .project
 .settings/
 .metadata/
 bin/
@@ -40,3 +40,4 @@ out/
 .gradle/
 build/
 !gradle-wrapper.jar
+Eclipse.app
