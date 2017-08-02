@@ -103,15 +103,15 @@ class DSLGenerator extends AbstractGenerator {
 		
 		for (component : roots.components){ 
 			fsa.generateFile(prefix + "components/" + component.componentTypeName + ".cs", '''
-			Â«component.componentInterface(target)Â»
+			«component.componentInterface(target)»
 			
-			Â«component.componentClass(target)Â»
+			«component.componentClass(target)»
 			
-			Â«component.matcherExtension(defaultCtxName)Â»
+			«component.matcherExtension(defaultCtxName)»
 			
-			Â«component.entityExtension(target, defaultCtxName)Â»
+			«component.entityExtension(target, defaultCtxName)»
 			
-			Â«component.contextExtension(target, defaultCtxName)Â»
+			«component.contextExtension(target, defaultCtxName)»
 			'''.addEntitasUsing.wrapWithNamespace(namespace))
 		}
 		for (system : roots.systems){

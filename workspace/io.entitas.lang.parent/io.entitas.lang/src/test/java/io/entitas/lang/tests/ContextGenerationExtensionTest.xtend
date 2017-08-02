@@ -56,7 +56,14 @@ class ContextGenerationExtensionTest {
 					"Core Context",
 					CoreComponentsLookup.componentNames,
 					CoreComponentsLookup.componentTypes
-				)
+				),
+				(entity) =>
+
+				#if (ENTITAS_FAST_AND_UNSAFE)
+					new Entitas.UnsafeAERC()
+				#else
+					new Entitas.SafeAERC(entity)
+				#endif
 			) {}
 		}
 		public sealed partial class InputContext : Context<InputEntity> {
@@ -68,7 +75,14 @@ class ContextGenerationExtensionTest {
 					"Input Context",
 					InputComponentsLookup.componentNames,
 					InputComponentsLookup.componentTypes
-				)
+				),
+				(entity) =>
+
+				#if (ENTITAS_FAST_AND_UNSAFE)
+					new Entitas.UnsafeAERC()
+				#else
+					new Entitas.SafeAERC(entity)
+				#endif
 			) {}
 		}
 		public sealed partial class MapContext : Context<MapEntity> {
@@ -80,7 +94,14 @@ class ContextGenerationExtensionTest {
 					"Map Context",
 					MapComponentsLookup.componentNames,
 					MapComponentsLookup.componentTypes
-				)
+				),
+				(entity) =>
+
+				#if (ENTITAS_FAST_AND_UNSAFE)
+					new Entitas.UnsafeAERC()
+				#else
+					new Entitas.SafeAERC(entity)
+				#endif
 			) {}
 		}
 		'''.toString, 
@@ -113,30 +134,63 @@ class ContextGenerationExtensionTest {
 		
 			static Contexts _sharedInstance;
 		
-			public static void CreateContextObserver(IContext context) {
-		#if(!ENTITAS_DISABLE_VISUAL_DEBUGGING && UNITY_EDITOR)
-				if(UnityEngine.Application.isPlaying) {
-					var observer = new Entitas.Unity.VisualDebugging.ContextObserver(context);
-					UnityEngine.Object.DontDestroyOnLoad(observer.gameObject);
-				}
-		#endif
-			}
+		
 			public CoreContext core { get; set; }
 			public InputContext input { get; set; }
 			public MapContext map { get; set; }
 		
 			public IContext[] allContexts { get { return new IContext [] { core, input, map }; } }
 		
-			public virtual void SetAllContexts() {
+		
+			public Contexts() {
+				
 				core = new CoreContext();
 				input = new InputContext();
 				map = new MapContext();
-				
-				CreateContextObserver(core);
-				CreateContextObserver(input);
-				CreateContextObserver(map);
+
+				var postConstructors = System.Linq.Enumerable.Where(
+					GetType().GetMethods(),
+					method => System.Attribute.IsDefined(method, typeof(Entitas.CodeGeneration.Attributes.PostConstructorAttribute))
+				);
+		
+				foreach (var postConstructor in postConstructors) {
+					postConstructor.Invoke(this, null);
+				}
 			}
+			
+			public void Reset() {
+				var contexts = allContexts;
+				for (int i = 0; i < contexts.Length; i++) {
+					contexts[i].Reset();
+				}
+			}
+			    
 		}
+		    
+		public partial class Contexts {
+		
+		#if (!ENTITAS_DISABLE_VISUAL_DEBUGGING && UNITY_EDITOR)
+		
+			[Entitas.CodeGeneration.Attributes.PostConstructor]
+			public void InitializeContexObservers() {
+				try {
+					CreateContextObserver(core);
+					CreateContextObserver(input);
+					CreateContextObserver(map);
+				} catch(System.Exception) {
+				}
+			}
+		
+			public void CreateContextObserver(Entitas.IContext context) {
+				if (UnityEngine.Application.isPlaying) {
+					var observer = new Entitas.VisualDebugging.Unity.ContextObserver(context);
+					UnityEngine.Object.DontDestroyOnLoad(observer.gameObject);
+				}
+			}
+		
+		#endif
+		}
+		
 		'''.toString, 
 		result.context.contextsHelperClassDefinition.toString 
 		)

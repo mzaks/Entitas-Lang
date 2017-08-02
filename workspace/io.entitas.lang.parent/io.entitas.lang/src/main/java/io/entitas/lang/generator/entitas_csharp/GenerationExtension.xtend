@@ -7,41 +7,41 @@ import com.google.common.collect.ArrayListMultimap
 
 class GenerationExtension {
 	static def wrapWithNamespace(CharSequence code, String namespace)'''
-		Â«IF namespace !== nullÂ»
-		namespace Â«namespaceÂ» {
-			Â«codeÂ»
+		«IF namespace !== null»
+		namespace «namespace» {
+			«code»
 		}
-		Â«ELSEÂ»
-		Â«codeÂ»
-		Â«ENDIFÂ»
+		«ELSE»
+		«code»
+		«ENDIF»
 	'''
 	
 	static def addEntitasUsing(CharSequence code)'''
 		using Entitas;
 		
-		Â«codeÂ»
+		«code»
 	'''
 	
 	static def componentLookup(List<Root> roots, String defaultCtx)'''
-		Â«val contextComponentMap = roots.computeContextComponentMap(defaultCtx)Â»
-		Â«FOR ctx : contextComponentMap.keySet.sortÂ»
-		Â«val componentList = contextComponentMap.get(ctx).sortBy[it.componentName]Â»
-		public static class Â«ctxÂ»ComponentsLookup {
-			Â«FOR component : componentList.indexedÂ»
-			public const int Â«component.value.componentNameÂ» = Â«component.keyÂ»;
-			Â«ENDFORÂ»
+		«val contextComponentMap = roots.computeContextComponentMap(defaultCtx)»
+		«FOR ctx : contextComponentMap.keySet.sort»
+		«val componentList = contextComponentMap.get(ctx).sortBy[it.componentName]»
+		public static class «ctx»ComponentsLookup {
+			«FOR component : componentList.indexed»
+			public const int «component.value.componentName» = «component.key»;
+			«ENDFOR»
 		
-			public const int TotalComponents = Â«componentList.sizeÂ»;
+			public const int TotalComponents = «componentList.size»;
 		
 			public static readonly string[] componentNames = {
-				Â«FOR component : componentList SEPARATOR ', 'Â»"Â«component.componentNameÂ»"Â«ENDFORÂ»Â«Â»
+				«FOR component : componentList SEPARATOR ', '»"«component.componentName»"«ENDFOR»«»
 			};
 		
 			public static readonly System.Type[] componentTypes = {
-				Â«FOR component : componentList SEPARATOR ', 'Â»typeof(Â«component.componentTypeNameÂ»)Â«ENDFORÂ»Â«Â»
+				«FOR component : componentList SEPARATOR ', '»typeof(«component.componentTypeName»)«ENDFOR»«»
 			};
 		}
-		Â«ENDFORÂ»
+		«ENDFOR»
 	'''
 	
 	static def computeContextComponentMap(List<Root> roots, String defaultCtx){
