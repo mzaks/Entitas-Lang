@@ -19,6 +19,8 @@ import static extension io.entitas.lang.generator.entitas_csharp.GenerationExten
 import static extension io.entitas.lang.generator.entitas_csharp.ComponentGenerationExtension.*
 import static extension io.entitas.lang.generator.entitas_csharp.SystemGenerationExtension.*
 import org.eclipse.xtext.util.StopWatch
+import io.entitas.lang.generator.entitas_csharp.FeatureGenerationExtension
+import io.entitas.lang.generator.entitas_csharp.MatcherGenerationExtension
 
 /**
  * Generates code from your model files on save.
@@ -55,6 +57,10 @@ class DSLGenerator extends AbstractGenerator {
 			fsa.generateFile("EntityClasses.cs", currentRoot.context.entityClassDefinitions.addEntitasUsing.wrapWithNamespace(namespace))
 			fsa.generateFile("ContextClasses.cs", currentRoot.context.contextClassDefinitions.addEntitasUsing.wrapWithNamespace(namespace))
 			fsa.generateFile("Contexts.cs", currentRoot.context.contextsHelperClassDefinition.addEntitasUsing.wrapWithNamespace(namespace))
+			fsa.generateFile("Feature.cs", FeatureGenerationExtension.featureClass())
+			fsa.generateFile("Matchers.cs", MatcherGenerationExtension.matchersClass(currentRoot.context))
+			
+			
 		}
 		
 //		if(currentRoot.components.empty){
@@ -79,15 +85,15 @@ class DSLGenerator extends AbstractGenerator {
 		
 		for (component : roots.components){ 
 			fsa.generateFile("components/" + component.componentTypeName + ".cs", '''
-			Â«component.componentInterface(target)Â»
+			«component.componentInterface(target)»
 			
-			Â«component.componentClass(target)Â»
+			«component.componentClass(target)»
 			
-			Â«component.matcherExtension(defaultCtxName)Â»
+			«component.matcherExtension(defaultCtxName)»
 			
-			Â«component.entityExtension(target, defaultCtxName)Â»
+			«component.entityExtension(target, defaultCtxName)»
 			
-			Â«component.contextExtension(target, defaultCtxName)Â»
+			«component.contextExtension(target, defaultCtxName)»
 			'''.addEntitasUsing.wrapWithNamespace(namespace))
 		}
 		for (system : roots.systems){

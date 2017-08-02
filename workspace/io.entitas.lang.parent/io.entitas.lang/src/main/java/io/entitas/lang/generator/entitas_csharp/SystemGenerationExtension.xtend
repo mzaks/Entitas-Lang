@@ -9,61 +9,61 @@ import io.entitas.lang.dsl.AccessRule
 
 class SystemGenerationExtension {
 	public static def abstractSystemClass(io.entitas.lang.dsl.System system, String defaultContextName)'''
-		Â«val triggerContext = system.triggerContextName(defaultContextName)Â»
-		public abstract class AbstractÂ«system.systemTypeNameÂ» : Â«FOR interfaceName : system.interfacesToImplement(defaultContextName) SEPARATOR ', 'Â»Â«interfaceNameÂ»Â«ENDFORÂ»{
-			Â«FOR rule : system.accessRulesÂ»
-			Â«rule.accessStatememnt(defaultContextName)Â»
-			Â«ENDFORÂ»
+		«val triggerContext = system.triggerContextName(defaultContextName)»
+		public abstract class Abstract«system.systemTypeName» : «FOR interfaceName : system.interfacesToImplement(defaultContextName) SEPARATOR ', '»«interfaceName»«ENDFOR»{
+			«FOR rule : system.accessRules»
+			«rule.accessStatememnt(defaultContextName)»
+			«ENDFOR»
 		
-			Â«IF system.isExplicitContextListÂ»
-			protected AbstractÂ«system.systemTypeNameÂ»(Â«FOR ctxName : system.contextNameList(defaultContextName) SEPARATOR ', 'Â»Â«ctxNameÂ»Context Â«ctxName.toFirstLowerÂ»Â«ENDFORÂ»)Â«IF system.isReactiveÂ» : base(Â«triggerContext.toFirstLowerÂ»)Â«ENDIFÂ» {
-				Â«FOR rule : system.accessRulesÂ»
-				Â«rule.assignmentStatememntForExplicitContextList(defaultContextName)Â»
-				Â«ENDFORÂ»
+			«IF system.isExplicitContextList»
+			protected Abstract«system.systemTypeName»(«FOR ctxName : system.contextNameList(defaultContextName) SEPARATOR ', '»«ctxName»Context «ctxName.toFirstLower»«ENDFOR»)«IF system.isReactive» : base(«triggerContext.toFirstLower»)«ENDIF» {
+				«FOR rule : system.accessRules»
+				«rule.assignmentStatememntForExplicitContextList(defaultContextName)»
+				«ENDFOR»
 			}
-			Â«ELSEÂ»
-			protected AbstractÂ«system.systemTypeNameÂ»(Contexts contexts)Â«IF system.isReactiveÂ» : base(contexts.Â«triggerContext.toFirstLowerÂ»)Â«ENDIFÂ» {
-				Â«FOR rule : system.accessRulesÂ»
-				Â«rule.assignmentStatememnt(defaultContextName)Â»
-				Â«ENDFORÂ»
+			«ELSE»
+			protected Abstract«system.systemTypeName»(Contexts contexts)«IF system.isReactive» : base(contexts.«triggerContext.toFirstLower»)«ENDIF» {
+				«FOR rule : system.accessRules»
+				«rule.assignmentStatememnt(defaultContextName)»
+				«ENDFOR»
 			}
-			Â«ENDIFÂ»
-			Â«IF system.isReactiveÂ»
-			protected override Collector<Â«triggerContextÂ»Entity> GetTrigger(IContext<Â«triggerContextÂ»Entity> context) {
-				Â«IF system.triggerRules.size == 1Â»
-				Â«val pair = system.triggerRules.get(0).parameterExpression(triggerContext)Â»
-				return context.CreateCollector(Â«pair.keyÂ», Â«pair.valueÂ»);
-				Â«ELSEÂ»
-				Â«val pairs = system.triggerRules.map[it.parameterExpression(triggerContext)]Â»
-				return new Collector<Â«triggerContextÂ»Entity>(
+			«ENDIF»
+			«IF system.isReactive»
+			protected override ICollector<«triggerContext»Entity> GetTrigger(IContext<«triggerContext»Entity> context) {
+				«IF system.triggerRules.size == 1»
+				«val pair = system.triggerRules.get(0).parameterExpression(triggerContext)»
+				return context.CreateCollector(«pair.key».«pair.value»());
+				«ELSE»
+				«val pairs = system.triggerRules.map[it.parameterExpression(triggerContext)]»
+				return new Collector<«triggerContext»Entity>(
 							new [] {
-								Â«FOR pair : pairs SEPARATOR ', 'Â»
-								context.GetGroup(Â«pair.keyÂ»)
-								Â«ENDFORÂ»
+								«FOR pair : pairs SEPARATOR ', '»
+								context.GetGroup(«pair.key»)
+								«ENDFOR»
 							},
 							new [] {
-								Â«FOR pair : pairs SEPARATOR ', 'Â»
-								Â«pair.valueÂ»
-								Â«ENDFORÂ»
+								«FOR pair : pairs SEPARATOR ', '»
+								GroupEvent.«pair.value»
+								«ENDFOR»
 							}
 						);
-				Â«ENDIFÂ»
+				«ENDIF»
 			}
-			Â«IF system.noFilterÂ»
-			protected override bool Filter(Â«triggerContextÂ»Entity entity) {
+			«IF system.noFilter»
+			protected override bool Filter(«triggerContext»Entity entity) {
 				return true;
 			}
-			Â«ENDIFÂ»
-			Â«IF system.matcherRules !== nullÂ»
-			readonly IMatcher<Â«triggerContextÂ»Entity> filterMatcher = Â«system.matcherRules.matcherExpression(triggerContext)Â»;
-			protected override bool Filter(Â«triggerContextÂ»Entity entity) {
+			«ENDIF»
+			«IF system.matcherRules !== null»
+			readonly IMatcher<«triggerContext»Entity> filterMatcher = «system.matcherRules.matcherExpression(triggerContext)»;
+			protected override bool Filter(«triggerContext»Entity entity) {
 				return filterMatcher.Matches(entity);
 			}
-			Â«ENDIFÂ»
-			Â«ENDIFÂ»
-			Â«FOR method : system.abstractMethods(defaultContextName)Â»
-			Â«methodÂ»
-			Â«ENDFORÂ»
+			«ENDIF»
+			«ENDIF»
+			«FOR method : system.abstractMethods(defaultContextName)»
+			«method»
+			«ENDFOR»
 		}
 	'''
 	
@@ -71,14 +71,15 @@ class SystemGenerationExtension {
 		val matcher =  if(rule.components.size == 1){
 			contextName + "Matcher." + rule.components.head.componentName
 		} else {
-			'''Matcher<Â«contextNameÂ»Entity>.AllOf(Â«FOR comp : rule.components SEPARATOR ', 'Â»Â«contextNameÂ»Matcher.Â«comp.componentNameÂ»Â«ENDFORÂ»)'''.toString
+			'''Matcher<«contextName»Entity>.AllOf(«FOR comp : rule.components SEPARATOR ', '»«contextName»Matcher.«comp.componentName»«ENDFOR»)'''.toString
 		}
+		
 		val event = if(rule.isAdded){
-			"GroupEvent.Added"
+			"Added"
 		} else if(rule.isRemoved){
-			"GroupEvent.Removed"
+			"Removed"
 		} else {
-			"GroupEvent.AddedOrRemoved"
+			"AddedOrRemoved"
 		}
 		return new Pair(matcher, event)
 	}
@@ -93,16 +94,16 @@ class SystemGenerationExtension {
 		}
 		if (rule.allComponents.size > 0){
 			val code = '''
-				Matcher<Â«contextNameÂ»Entity>.AllOf(Â«FOR comp : rule.allComponents SEPARATOR ', 'Â»Â«contextNameÂ»Matcher.Â«comp.componentNameÂ»Â«ENDFORÂ»)
-					Â«IF rule.anyComponents.isNullOrEmpty == falseÂ».AnyOf(Â«FOR comp : rule.anyComponents SEPARATOR ', 'Â»Â«contextNameÂ»Matcher.Â«comp.componentNameÂ»Â«ENDFORÂ»)Â«ENDIFÂ»
-					Â«IF rule.noneComponents.isNullOrEmpty == falseÂ».NoneOf(Â«FOR comp : rule.noneComponents SEPARATOR ', 'Â»Â«contextNameÂ»Matcher.Â«comp.componentNameÂ»Â«ENDFORÂ»)Â«ENDIFÂ»
+				Matcher<«contextName»Entity>.AllOf(«FOR comp : rule.allComponents SEPARATOR ', '»«contextName»Matcher.«comp.componentName»«ENDFOR»)
+					«IF rule.anyComponents.isNullOrEmpty == false».AnyOf(«FOR comp : rule.anyComponents SEPARATOR ', '»«contextName»Matcher.«comp.componentName»«ENDFOR»)«ENDIF»
+					«IF rule.noneComponents.isNullOrEmpty == false».NoneOf(«FOR comp : rule.noneComponents SEPARATOR ', '»«contextName»Matcher.«comp.componentName»«ENDFOR»)«ENDIF»
 			'''
 			return code.toString
 		}
 		if (rule.anyComponents.size > 0){
 			val code = '''
-				Matcher<Â«contextNameÂ»Entity>.AnyOf(Â«FOR comp : rule.anyComponents SEPARATOR ', 'Â»Â«contextNameÂ»Matcher.Â«comp.componentNameÂ»Â«ENDFORÂ»)
-						Â«IF rule.noneComponents.isNullOrEmpty == falseÂ».NoneOf(Â«FOR comp : rule.noneComponents SEPARATOR ', 'Â»Â«contextNameÂ»Matcher.Â«comp.componentNameÂ»Â«ENDFORÂ»)Â«ENDIFÂ»
+				Matcher<«contextName»Entity>.AnyOf(«FOR comp : rule.anyComponents SEPARATOR ', '»«contextName»Matcher.«comp.componentName»«ENDFOR»)
+						«IF rule.noneComponents.isNullOrEmpty == false».NoneOf(«FOR comp : rule.noneComponents SEPARATOR ', '»«contextName»Matcher.«comp.componentName»«ENDFOR»)«ENDIF»
 			'''
 			return code.toString
 		}
@@ -110,29 +111,29 @@ class SystemGenerationExtension {
 	
 	private static def accessStatememnt(AccessRule rule, String defaultContext){
 		if (rule.contextRef !== null){
-			return '''protected readonly Â«rule.contextRef.name.toFirstUpperÂ»Context Â«rule.nameÂ»;'''
+			return '''protected readonly «rule.contextRef.name.toFirstUpper»Context «rule.name»;'''
 		}
 		if (rule.matcherRule !== null){
 			val context = rule.contextName(defaultContext)
-			return '''protected readonly IGroup<Â«contextÂ»Entity> Â«rule.nameÂ»;'''
+			return '''protected readonly IGroup<«context»Entity> «rule.name»;'''
 		}
 	}
 	
 	private static def assignmentStatememnt(AccessRule rule, String defaultContext){
 		if (rule.contextRef !== null){
-			return '''Â«rule.nameÂ» = contexts.Â«rule.contextRef.name.toFirstLowerÂ»;'''
+			return '''«rule.name» = contexts.«rule.contextRef.name.toFirstLower»;'''
 		} else if (rule.matcherRule !== null){
 			val context = rule.contextName(defaultContext)
-			return '''Â«rule.nameÂ» = contexts.Â«context.toFirstLowerÂ».GetGroup(Â«rule.matcherRule.matcherExpression(context)Â»);'''
+			return '''«rule.name» = contexts.«context.toFirstLower».GetGroup(«rule.matcherRule.matcherExpression(context)»);'''
 		}
 	}
 	
 	private static def assignmentStatememntForExplicitContextList(AccessRule rule, String defaultContext){
 		if (rule.contextRef !== null){
-			return '''this.Â«rule.nameÂ» = Â«rule.contextRef.name.toFirstLowerÂ»;'''
+			return '''this.«rule.name» = «rule.contextRef.name.toFirstLower»;'''
 		} else if (rule.matcherRule !== null){
 			val context = rule.contextName(defaultContext)
-			return '''this.Â«rule.nameÂ» = Â«context.toFirstLowerÂ».GetGroup(Â«rule.matcherRule.matcherExpression(context)Â»);'''
+			return '''this.«rule.name» = «context.toFirstLower».GetGroup(«rule.matcherRule.matcherExpression(context)»);'''
 		}
 	}
 }
