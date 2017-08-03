@@ -4,26 +4,33 @@ import io.entitas.lang.dsl.Context
 
 class ContextGenerationExtension {
 	static def entityClassDefinitions(Context ctx)'''
-	Â«FOR id : ctx.idsÂ»
-	public sealed partial class Â«id.nameÂ»Entity : Entity {}
-	Â«ENDFORÂ»
+	«FOR id : ctx.ids»
+	public sealed partial class «id.name»Entity : Entity {}
+	«ENDFOR»
 	'''
 	
 	static def contextClassDefinitions(Context ctx)'''
-	Â«FOR id : ctx.idsÂ»
-	public sealed partial class Â«id.nameÂ»Context : Context<Â«id.nameÂ»Entity> {
+	«FOR id : ctx.ids»
+	public sealed partial class «id.name»Context : Context<«id.name»Entity> {
 	
-		public Â«id.nameÂ»Context() : base(
-			Â«id.nameÂ»ComponentsLookup.TotalComponents,
+		public «id.name»Context() : base(
+			«id.name»ComponentsLookup.TotalComponents,
 			0,
 			new ContextInfo(
-				"Â«id.nameÂ» Context",
-				Â«id.nameÂ»ComponentsLookup.componentNames,
-				Â«id.nameÂ»ComponentsLookup.componentTypes
-			)
+				"«id.name» Context",
+				«id.name»ComponentsLookup.componentNames,
+				«id.name»ComponentsLookup.componentTypes
+			),
+			(entity) =>
+
+			#if (ENTITAS_FAST_AND_UNSAFE)
+				new Entitas.UnsafeAERC()
+			#else
+				new Entitas.SafeAERC(entity)
+			#endif
 		) {}
 	}
-	Â«ENDFORÂ»
+	«ENDFOR»
 	'''
 	
 	static def contextsHelperClassDefinition(Context ctx)'''
@@ -42,29 +49,62 @@ class ContextGenerationExtension {
 	
 		static Contexts _sharedInstance;
 	
-		public static void CreateContextObserver(IContext context) {
-	#if(!ENTITAS_DISABLE_VISUAL_DEBUGGING && UNITY_EDITOR)
-			if(UnityEngine.Application.isPlaying) {
-				var observer = new Entitas.Unity.VisualDebugging.ContextObserver(context);
+	
+		«FOR id : ctx.ids»
+		public «id.name»Context «id.name.toFirstLower» { get; set; }
+		«ENDFOR»
+	
+		public IContext[] allContexts { get { return new IContext [] { «FOR id : ctx.ids SEPARATOR ', '»«id.name.toFirstLower»«ENDFOR» }; } }
+	
+	
+		public Contexts() {
+			
+			«FOR id : ctx.ids»
+			«id.name.toFirstLower» = new «id.name.toFirstUpper»Context();
+			«ENDFOR»
+	
+			var postConstructors = System.Linq.Enumerable.Where(
+				GetType().GetMethods(),
+				method => System.Attribute.IsDefined(method, typeof(Entitas.CodeGeneration.Attributes.PostConstructorAttribute))
+			);
+	
+			foreach (var postConstructor in postConstructors) {
+				postConstructor.Invoke(this, null);
+			}
+		}
+		
+		public void Reset() {
+			var contexts = allContexts;
+			for (int i = 0; i < contexts.Length; i++) {
+				contexts[i].Reset();
+			}
+		}
+		    
+	}
+	    
+	public partial class Contexts {
+	
+	#if (!ENTITAS_DISABLE_VISUAL_DEBUGGING && UNITY_EDITOR)
+	
+		[Entitas.CodeGeneration.Attributes.PostConstructor]
+		public void InitializeContexObservers() {
+			try {
+				«FOR id : ctx.ids»
+				CreateContextObserver(«id.name.toFirstLower»);
+				«ENDFOR»
+			} catch(System.Exception) {
+			}
+		}
+	
+		public void CreateContextObserver(Entitas.IContext context) {
+			if (UnityEngine.Application.isPlaying) {
+				var observer = new Entitas.VisualDebugging.Unity.ContextObserver(context);
 				UnityEngine.Object.DontDestroyOnLoad(observer.gameObject);
 			}
+		}
+	
 	#endif
-		}
-		Â«FOR id : ctx.idsÂ»
-		public Â«id.nameÂ»Context Â«id.name.toFirstLowerÂ» { get; set; }
-		Â«ENDFORÂ»
-	
-		public IContext[] allContexts { get { return new IContext [] { Â«FOR id : ctx.ids SEPARATOR ', 'Â»Â«id.name.toFirstLowerÂ»Â«ENDFORÂ» }; } }
-	
-		public virtual void SetAllContexts() {
-			Â«FOR id : ctx.idsÂ»
-			Â«id.name.toFirstLowerÂ» = new Â«id.nameÂ»Context();
-			Â«ENDFORÂ»
-			
-			Â«FOR id : ctx.idsÂ»
-			CreateContextObserver(Â«id.name.toFirstLowerÂ»);
-			Â«ENDFORÂ»
-		}
 	}
+	
 	'''
 }

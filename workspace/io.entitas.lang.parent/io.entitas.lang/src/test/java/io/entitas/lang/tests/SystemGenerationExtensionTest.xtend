@@ -107,8 +107,8 @@ class SystemGenerationExtensionTest {
 		
 			protected AbstractFooSystem(Contexts contexts) : base(contexts.input) {
 			}
-			protected override Collector<InputEntity> GetTrigger(IContext<InputEntity> context) {
-				return context.CreateCollector(InputMatcher.Move, GroupEvent.Added);
+			protected override ICollector<InputEntity> GetTrigger(IContext<InputEntity> context) {
+				return context.CreateCollector(InputMatcher.Move.Added());
 			}
 			protected abstract override void Execute(System.Collections.Generic.List<InputEntity> entities);
 			protected abstract override bool Filter(InputEntity entity);
@@ -139,8 +139,8 @@ class SystemGenerationExtensionTest {
 		
 			protected AbstractFooSystem(Contexts contexts) : base(contexts.input) {
 			}
-			protected override Collector<InputEntity> GetTrigger(IContext<InputEntity> context) {
-				return context.CreateCollector(InputMatcher.Move, GroupEvent.Added);
+			protected override ICollector<InputEntity> GetTrigger(IContext<InputEntity> context) {
+				return context.CreateCollector(InputMatcher.Move.Added());
 			}
 			protected override bool Filter(InputEntity entity) {
 				return true;
@@ -170,8 +170,8 @@ class SystemGenerationExtensionTest {
 		
 			protected AbstractFooSystem(Contexts contexts) : base(contexts.input) {
 			}
-			protected override Collector<InputEntity> GetTrigger(IContext<InputEntity> context) {
-				return context.CreateCollector(InputMatcher.Move, GroupEvent.Added);
+			protected override ICollector<InputEntity> GetTrigger(IContext<InputEntity> context) {
+				return context.CreateCollector(InputMatcher.Move.Added());
 			}
 			readonly IMatcher<InputEntity> filterMatcher = InputMatcher.Move;
 			protected override bool Filter(InputEntity entity) {
@@ -202,8 +202,8 @@ class SystemGenerationExtensionTest {
 		
 			protected AbstractFooSystem(Contexts contexts) : base(contexts.input) {
 			}
-			protected override Collector<InputEntity> GetTrigger(IContext<InputEntity> context) {
-				return context.CreateCollector(InputMatcher.Move, GroupEvent.Added);
+			protected override ICollector<InputEntity> GetTrigger(IContext<InputEntity> context) {
+				return context.CreateCollector(InputMatcher.Move.Added());
 			}
 			readonly IMatcher<InputEntity> filterMatcher = InputMatcher.Move;
 			protected override bool Filter(InputEntity entity) {
@@ -237,8 +237,8 @@ class SystemGenerationExtensionTest {
 		
 			protected AbstractFooSystem(Contexts contexts) : base(contexts.input) {
 			}
-			protected override Collector<InputEntity> GetTrigger(IContext<InputEntity> context) {
-				return context.CreateCollector(InputMatcher.Move, GroupEvent.Added);
+			protected override ICollector<InputEntity> GetTrigger(IContext<InputEntity> context) {
+				return context.CreateCollector(InputMatcher.Move.Added());
 			}
 			readonly IMatcher<InputEntity> filterMatcher = Matcher<InputEntity>.AllOf(InputMatcher.Move)
 				.AnyOf(InputMatcher.A, InputMatcher.B)
@@ -273,7 +273,7 @@ class SystemGenerationExtensionTest {
 		
 			protected AbstractFooSystem(Contexts contexts) : base(contexts.input) {
 			}
-			protected override Collector<InputEntity> GetTrigger(IContext<InputEntity> context) {
+			protected override ICollector<InputEntity> GetTrigger(IContext<InputEntity> context) {
 				return new Collector<InputEntity>(
 							new [] {
 								context.GetGroup(Matcher<InputEntity>.AllOf(InputMatcher.Move, InputMatcher.A)), 
@@ -418,8 +418,8 @@ class SystemGenerationExtensionTest {
 				this.inputs = input.GetGroup(Matcher<InputEntity>.AllOf(InputMatcher.A, InputMatcher.B)
 				);
 			}
-			protected override Collector<CoreEntity> GetTrigger(IContext<CoreEntity> context) {
-				return context.CreateCollector(CoreMatcher.C, GroupEvent.Added);
+			protected override ICollector<CoreEntity> GetTrigger(IContext<CoreEntity> context) {
+				return context.CreateCollector(CoreMatcher.C.Added());
 			}
 			protected abstract override void Execute(System.Collections.Generic.List<CoreEntity> entities);
 			protected abstract override bool Filter(CoreEntity entity);
