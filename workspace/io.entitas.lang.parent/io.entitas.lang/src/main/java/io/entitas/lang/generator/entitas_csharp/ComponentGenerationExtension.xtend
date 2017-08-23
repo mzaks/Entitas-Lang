@@ -143,7 +143,7 @@ class ComponentGenerationExtension {
 			}
 		
 			public void Destroy«name»() {
-				DestroyEntity(«propertyName»);
+				«propertyName».Destroy();
 			}
 		}
 		«ENDFOR»

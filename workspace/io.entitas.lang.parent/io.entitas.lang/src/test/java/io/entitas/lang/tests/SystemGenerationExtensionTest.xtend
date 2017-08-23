@@ -240,7 +240,7 @@ class SystemGenerationExtensionTest {
 			protected override ICollector<InputEntity> GetTrigger(IContext<InputEntity> context) {
 				return context.CreateCollector(InputMatcher.Move.Added());
 			}
-			readonly IMatcher<InputEntity> filterMatcher = Matcher<InputEntity>.AllOf(InputMatcher.Move)
+			readonly IMatcher<InputEntity> filterMatcher = InputMatcher.AllOf(InputMatcher.Move)
 				.AnyOf(InputMatcher.A, InputMatcher.B)
 				.NoneOf(InputMatcher.C)
 			;
@@ -276,7 +276,7 @@ class SystemGenerationExtensionTest {
 			protected override ICollector<InputEntity> GetTrigger(IContext<InputEntity> context) {
 				return new Collector<InputEntity>(
 							new [] {
-								context.GetGroup(Matcher<InputEntity>.AllOf(InputMatcher.Move, InputMatcher.A)), 
+								context.GetGroup(InputMatcher.AllOf(InputMatcher.Move, InputMatcher.A)), 
 								context.GetGroup(InputMatcher.B)
 							},
 							new [] {
@@ -380,7 +380,7 @@ class SystemGenerationExtensionTest {
 		
 			protected AbstractFooSystem(InputContext input, MapContext map) {
 				this.mapCtx = map;
-				this.inputs = input.GetGroup(Matcher<InputEntity>.AllOf(InputMatcher.A, InputMatcher.B)
+				this.inputs = input.GetGroup(InputMatcher.AllOf(InputMatcher.A, InputMatcher.B)
 				);
 			}
 			public abstract void Execute();
@@ -415,7 +415,7 @@ class SystemGenerationExtensionTest {
 		
 			protected AbstractFooSystem(CoreContext core, InputContext input, MapContext map) : base(core) {
 				this.mapCtx = map;
-				this.inputs = input.GetGroup(Matcher<InputEntity>.AllOf(InputMatcher.A, InputMatcher.B)
+				this.inputs = input.GetGroup(InputMatcher.AllOf(InputMatcher.A, InputMatcher.B)
 				);
 			}
 			protected override ICollector<CoreEntity> GetTrigger(IContext<CoreEntity> context) {
@@ -480,7 +480,7 @@ class SystemGenerationExtensionTest {
 			protected readonly IGroup<InputEntity> moveables;
 		
 			protected AbstractFooSystem(Contexts contexts) {
-				moveables = contexts.input.GetGroup(Matcher<InputEntity>.AllOf(InputMatcher.Move)
+				moveables = contexts.input.GetGroup(InputMatcher.AllOf(InputMatcher.Move)
 					.AnyOf(InputMatcher.A)
 				);
 			}
@@ -512,7 +512,7 @@ class SystemGenerationExtensionTest {
 			protected readonly IGroup<InputEntity> moveables;
 		
 			protected AbstractFooSystem(Contexts contexts) {
-				moveables = contexts.input.GetGroup(Matcher<InputEntity>.AllOf(InputMatcher.Move)
+				moveables = contexts.input.GetGroup(InputMatcher.AllOf(InputMatcher.Move)
 					.NoneOf(InputMatcher.A)
 				);
 			}
@@ -574,7 +574,7 @@ class SystemGenerationExtensionTest {
 			protected readonly IGroup<InputEntity> moveables;
 		
 			protected AbstractFooSystem(Contexts contexts) {
-				moveables = contexts.input.GetGroup(Matcher<InputEntity>.AnyOf(InputMatcher.A, InputMatcher.B)
+				moveables = contexts.input.GetGroup(InputMatcher.AnyOf(InputMatcher.A, InputMatcher.B)
 						.NoneOf(InputMatcher.Move, InputMatcher.A)
 				);
 			}
