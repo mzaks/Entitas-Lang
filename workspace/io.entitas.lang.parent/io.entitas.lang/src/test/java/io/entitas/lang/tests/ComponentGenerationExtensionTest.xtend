@@ -399,7 +399,7 @@ class ComponentGenerationExtensionTest {
 			}
 		
 			public void DestroyVelocity() {
-				DestroyEntity(velocityEntity);
+				velocityEntity.Destroy();
 			}
 		}
 		'''.toString, 

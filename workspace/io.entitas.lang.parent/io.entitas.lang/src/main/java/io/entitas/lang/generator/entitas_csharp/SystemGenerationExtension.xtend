@@ -71,7 +71,7 @@ class SystemGenerationExtension {
 		val matcher =  if(rule.components.size == 1){
 			contextName + "Matcher." + rule.components.head.componentName
 		} else {
-			'''Matcher<«contextName»Entity>.AllOf(«FOR comp : rule.components SEPARATOR ', '»«contextName»Matcher.«comp.componentName»«ENDFOR»)'''.toString
+			'''«contextName»Matcher.AllOf(«FOR comp : rule.components SEPARATOR ', '»«contextName»Matcher.«comp.componentName»«ENDFOR»)'''.toString
 		}
 		
 		val event = if(rule.isAdded){
@@ -94,7 +94,7 @@ class SystemGenerationExtension {
 		}
 		if (rule.allComponents.size > 0){
 			val code = '''
-				Matcher<«contextName»Entity>.AllOf(«FOR comp : rule.allComponents SEPARATOR ', '»«contextName»Matcher.«comp.componentName»«ENDFOR»)
+				«contextName»Matcher.AllOf(«FOR comp : rule.allComponents SEPARATOR ', '»«contextName»Matcher.«comp.componentName»«ENDFOR»)
 					«IF rule.anyComponents.isNullOrEmpty == false».AnyOf(«FOR comp : rule.anyComponents SEPARATOR ', '»«contextName»Matcher.«comp.componentName»«ENDFOR»)«ENDIF»
 					«IF rule.noneComponents.isNullOrEmpty == false».NoneOf(«FOR comp : rule.noneComponents SEPARATOR ', '»«contextName»Matcher.«comp.componentName»«ENDFOR»)«ENDIF»
 			'''
@@ -102,7 +102,7 @@ class SystemGenerationExtension {
 		}
 		if (rule.anyComponents.size > 0){
 			val code = '''
-				Matcher<«contextName»Entity>.AnyOf(«FOR comp : rule.anyComponents SEPARATOR ', '»«contextName»Matcher.«comp.componentName»«ENDFOR»)
+				«contextName»Matcher.AnyOf(«FOR comp : rule.anyComponents SEPARATOR ', '»«contextName»Matcher.«comp.componentName»«ENDFOR»)
 						«IF rule.noneComponents.isNullOrEmpty == false».NoneOf(«FOR comp : rule.noneComponents SEPARATOR ', '»«contextName»Matcher.«comp.componentName»«ENDFOR»)«ENDIF»
 			'''
 			return code.toString
