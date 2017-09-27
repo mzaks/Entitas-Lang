@@ -255,7 +255,7 @@ class ComponentGenerationExtensionTest {
 						if(value) {
 							CreateEntity().didFinished = true;
 						} else {
-							DestroyEntity(entity);
+							entity.Destroy();
 						}
 					}
 				}
@@ -292,7 +292,7 @@ class ComponentGenerationExtensionTest {
 						if(value) {
 							CreateEntity().isFinished = true;
 						} else {
-							DestroyEntity(entity);
+							entity.Destroy();
 						}
 					}
 				}
@@ -310,7 +310,7 @@ class ComponentGenerationExtensionTest {
 						if(value) {
 							CreateEntity().isFinished = true;
 						} else {
-							DestroyEntity(entity);
+							entity.Destroy();
 						}
 					}
 				}
@@ -347,7 +347,7 @@ class ComponentGenerationExtensionTest {
 						if(value) {
 							CreateEntity().didFinished = true;
 						} else {
-							DestroyEntity(entity);
+							entity.Destroy();
 						}
 					}
 				}

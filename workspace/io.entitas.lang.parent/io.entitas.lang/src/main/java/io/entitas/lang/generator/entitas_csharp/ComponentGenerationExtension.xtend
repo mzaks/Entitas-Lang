@@ -105,7 +105,7 @@ class ComponentGenerationExtension {
 						if(value) {
 							CreateEntity().«accessor» = true;
 						} else {
-							DestroyEntity(entity);
+							entity.Destroy();
 						}
 					}
 				}
